@@ -34,4 +34,31 @@ Making progress towards passing all the tests in t/ansitest.ice9 - which is not 
 
 The TIL core is most likely not free of STATE dependencies. See http://www.complang.tuwien.ac.at/projects/forth.html for links dealing with STATE-smartness.
 
+# MANIFESTO
+
+The symbol / (looks like a tick if you squint) means something that's doable.
+
+The symbol ? means something that's going to take effort
+
+* Distinct syntax for distinct features
+* ? OO robustness, Eiffel style
+** Object Roles - add rigorous dynamics to OOP
+* / Generators and goal-directed evaluation
+** / Failure is an option
+** / Many successes is an option
+* / Threading in the style of Erlang
+* ? Container-based parallelism
+** ? True relational?
+* / Operators in the FP sense
+* / Closures, lambdas, currying
+** ? Lazy evaluation?
+* ? Dimension aware (eg physical dims such as time, length. Mostly a compiler issue)
+* Objects are Good, Values are Sacred
+** values would be like Eiffel's expanded types
+
+### other ideas
+
+* binding Prolog style?
+* guards in the functional style?
+
 ## To Be Continued...
