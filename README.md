@@ -42,19 +42,23 @@ The symbol ? means something that's going to take effort
 
 * Distinct syntax for distinct features
 * ? OO robustness, Eiffel style
-** Object Roles - add rigorous dynamics to OOP
-* / Generators and goal-directed evaluation
-** / Failure is an option
-** / Many successes is an option
+ * ? Object Roles - add rigorous dynamics to OOP. Research is sparse out there...
+* Objects are Good, Values are Sacred
+ * values would be like Eiffel's expanded types
+* / Generators and goal-directed evaluation (GDE) in the style of Icon/Unicon
+ * / Failure is an option
+ * / Many successes is an option
 * / Threading in the style of Erlang
 * ? Container-based parallelism
-** ? True relational?
+ * ? True relational?
+ * ? need to decide how values and inheritance can co-exist
+ * ? need to decide how it interacts with GDE
 * / Operators in the FP sense
 * / Closures, lambdas, currying
-** ? Lazy evaluation?
+ * ? Lazy evaluation?
 * ? Dimension aware (eg physical dims such as time, length. Mostly a compiler issue)
-* Objects are Good, Values are Sacred
-** values would be like Eiffel's expanded types
+ * ? does it make sense to declare your own dimensions?
+ * ? what can they be called? 'metrics'? the word dimension has prior meaning in programming...
 
 ### other ideas
 
