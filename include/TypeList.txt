@@ -1,0 +1,21 @@
+
+Byte        BytePtr
+Cell        CellPtr
+Cell2       Cell2Ptr
+Char        CharPtr
+Float32     Float32Ptr
+Float64     Float64Ptr
+FloatLD     FloatLDPtr
+Int         IntPtr
+Int16       Int16Ptr
+Int32       Int32Ptr
+Int64       Int64Ptr
+sCell       sCellPtr
+sCell2      sCell2Ptr
+UniChar     UniCharPtr
+            VoidPtr
+Word        WordPtr
+Word16      Word16Ptr
+Word32      Word32Ptr
+Word64      Word64Ptr
+

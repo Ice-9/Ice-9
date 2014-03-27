@@ -1,0 +1,82 @@
+
+: scount-bytes
+    s" /counted-string" environment? not if
+        1
+    else
+        0 swap      \ count goes under
+        begin ?dup  \ hit zero yet?
+        while 8 rshift swap 1+ swap
+        repeat
+    then
+;
+scount-bytes constant scount-bytes
+
+\ scount-bytes . cr
+
+: thingy do i . cr loop ;
+
+4 1 thingy .sp cr
+
+1 4 thingy .sp cr
+
+
+: alarm_thread 
+    thread::self thread::detach ifn
+        ." thread::detach error " . cr
+    else
+        dup sleep
+        ." I slept for " . ." seconds\n"
+    then
+;
+
+
+: main
+    10 0 do
+        rand 10 mod i +
+        ['] alarm_thread 1 thread::create
+        ifn  ." thread::create error " . cr
+        else drop
+        then
+    loop
+
+    .sp
+    30 sleep
+;
+
+
+\   int status;
+\   char line[128];
+\   alarm_t *alarm;
+\   pthread_t thread;
+
+\   while(1) {
+\       printf("Alarm> ");
+\       if(fgets(line, sizeof(line), stdin) == NULL)
+\           exit(0);
+
+\       if(strlen(line) <= 1)
+\           continue;
+
+\       alarm = (alarm_t*)malloc(sizeof(alarm_t));
+\       if(alarm == NULL)
+\           errno_abort("Allocate alarm");
+
+\       /*
+\        * Parse input line into seconds (%d) and a message
+\        * (%64[^\n]), consisting of up to 64 characters
+\        * separated from the seconds by whitespace.
+\        */
+\       if(sscanf(line, "%d %64[^\n]", &alarm->seconds, alarm->message) < 2) {
+\           fprintf(stderr, "Bad command\n");
+\           free(alarm);
+\       }
+\       else {
+\           status = pthread_create(&thread, NULL, alarm_thread, alarm);
+\           if(status)
+\               err_abort(status, "Create alarm thread");
+\       }
+\   }
+
+
+main
+

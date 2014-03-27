@@ -1,0 +1,5 @@
+
+: thingy 3 4 + . ;
+thingy cr
+bye
+

@@ -1,0 +1,45 @@
+
+: thread1                                       ( x -- x )
+    ." thread1 " dup .
+;
+
+: thread2                                       ( x -- x x )
+    ." thread2 " dup .
+    dup 2
+;
+
+: test1 {: x | thr -- TRUE | FALSE :}
+    x ['] thread1 1 thread::create
+    ifn ." thread::create error " . cr
+    else
+        to thr
+        thr thread::join
+        ifn ." thread::join error " . cr
+        else
+            ." return value is " dup .
+            x = if
+                ." which is what it should be!\n"
+            else
+                ." which is NOT what it should be!\n"
+            then
+        then
+    then
+;
+
+: test2 {: x | thr -- TRUE | FALSE :}
+    x ['] thread2 1 thread::create
+    ifn ." thread::create error " . cr
+    else
+        to thr
+        thr thread::join
+        ifn ." thread::join error " . cr
+        else
+            0 do . loop cr
+        then
+    then
+;
+
+10 test1 20 test1
+10 test2 20 test2
+
+.sp

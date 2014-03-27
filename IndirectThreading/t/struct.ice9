@@ -1,0 +1,152 @@
+
+variable bitoffset
+
+: bitalign ( offset size -- offset' size )
+    ( TODO: also consider word alignment for multibyte fields on easily-offended processors )
+    ( moves to next byte boundary if the bit offset is nonzero )
+    bitoffset @ if
+        0 bitoffset !
+        swap 1+ swap
+    then
+;
+
+( prepare struct collection )
+: struct
+    0 bitoffset ! 0
+;
+
+( defines an n-byte field )
+: field ( offset size -- newoffset )
+  \ SHOULD BE create - <builds is obsolete
+  <builds
+    bitalign over , +
+
+  does> ( structure-base -- structure-member-address )
+    @ +
+;
+
+( defines an n-bit field )
+: bits ( offset #bits -- namex newoffset )
+  \ SHOULD BE create - <builds is obsolete
+  <builds
+    \ TODO: make an issue of bit-field crossing a byte boundary?
+    over , bitoffset @ , dup ,      ( offset #bits )
+
+    \ reserves an n-bits field      ( offset #bits -- newoffset )
+    bitoffset @ + 8 /mod ( offset bitoffset_mod_8 bitoffset/8 )
+    swap bitoffset ! +
+
+  does>     ( struct_addr pfa -- byte_addr bit# #bits )
+    >r
+    r@ 0 cells + @ +   ( byte_addr )
+    r@ 1 cells + @     ( byte_addr bit# )
+    r> 2 cells + @     ( byte_addr bit# #bits )
+;
+
+hex
+create masks
+    0 ,
+    00000001 , 00000003 , 00000007 , 0000000F , 0000001F , 0000003F , 0000007F , 000000FF ,
+    000001FF , 000003FF , 000007FF , 00000FFF , 00001FFF , 00003FFF , 00007FFF , 0000FFFF ,
+    0001FFFF , 0003FFFF , 0007FFFF , 000FFFFF , 001FFFFF , 003FFFFF , 007FFFFF , 00FFFFFF ,
+    01FFFFFF , 03FFFFFF , 07FFFFFF , 0FFFFFFF , 1FFFFFFF , 3FFFFFFF , 7FFFFFFF , FFFFFFFF ,
+decimal
+
+
+: bitmask ( n -- mask )
+    masks swap cells + @
+;
+
+: bit@ ( byte_addr bit# #bits -- n )
+    rot c@              ( bit# #bits byte )
+  \ rot negate rshift   ( #bits shifted-byte )
+    rot rshift          ( #bits shifted-byte )
+    swap bitmask and
+;
+
+: bit! ( n byte_addr bit# #bits -- )
+    bitmask             ( n byte_addr bit# mask )
+    rot >r              ( n bit# mask R:byte_addr )
+    rot over and        ( bit# mask masked-n )
+    \ ." masked value is now " dup x. cr
+    2 pick lshift       ( bit# mask shifted-masked-n )
+    \ ." shifted masked value is now " dup x. cr
+    rrot                ( shifted-masked-n bit# mask )
+    swap rshift         ( shifted-masked-n shifted-mask )
+    invert              ( shifted-masked-n shifted-inverted-mask )
+    r@                  ( shifted-masked-n shifted-inverted-mask byte_addr )
+    c@ and              ( shifted-masked-n masked-old-value )
+    or                  ( new-value )
+    r> c!
+;
+
+struct
+    4 field aaa
+    4 field bbb
+    2 bits foo
+    2 bits bar
+    2 bits baz
+    2 bits zxc
+    4 field ccc
+constant thingy-record-size
+
+create thingy thingy-record-size allot
+
+thingy-record-size . cr
+
+10 thingy aaa !
+20 thingy bbb !
+30 thingy ccc !
+0  thingy foo 2drop c!
+
+." thingy is at  " thingy . cr
+." thingy.aaa is at " thingy aaa .s $sp_clear cr
+." thingy.bbb is at " thingy bbb .s $sp_clear cr
+." thingy.foo is at " thingy foo .s $sp_clear cr
+." thingy.bar is at " thingy bar .s $sp_clear cr
+." thingy.baz is at " thingy baz .s $sp_clear cr
+." thingy.zxc is at " thingy zxc .s $sp_clear cr
+." thingy.ccc is at " thingy ccc .s $sp_clear cr
+
+." thingy.aaa is " thingy aaa ? cr
+." thingy.bbb is " thingy bbb ? cr
+." thingy.ccc is " thingy ccc ? cr
+
+cr
+
+
+0 thingy foo bit!
+2 thingy bar bit!
+0 thingy baz bit!
+2 thingy zxc bit!
+
+\ cr
+
+thingy foo bit@ . cr
+thingy bar bit@ . cr
+thingy baz bit@ . cr
+thingy zxc bit@ . cr
+
+\ ." thingy.foo is " thingy foo 2drop c@ . $sp_clear cr
+
+0 value x
+: struct-test
+    ." struct test\n"
+    4 0 do 4 0 do 4 0 do 4 0 do
+        \ clear the bits from the outside
+        0 thingy foo 2drop c!
+
+        i thingy foo bit!
+        j thingy bar bit!
+        k thingy baz bit!
+        l thingy zxc bit!
+
+        thingy foo 2drop c@ x <> if ." bugger!\n" then
+        x 1+ to x
+    loop loop loop loop
+;
+
+cr
+struct-test
+cr
+

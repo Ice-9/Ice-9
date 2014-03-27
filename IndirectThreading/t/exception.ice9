@@ -1,0 +1,26 @@
+
+: baz
+    ." this is baz\n"
+    5000 throw
+    ." that was baz\n"
+;
+
+: bar
+    ." this is bar\n"
+    baz
+    ." that was bar\n"
+;
+
+: foo
+    ['] bar catch .sp
+
+    ?dup ifn
+        ." normal termination\n"
+    else
+        ." caught exception " . cr
+    then
+    .sp
+;
+
+foo
+

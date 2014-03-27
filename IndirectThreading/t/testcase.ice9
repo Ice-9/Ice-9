@@ -1,0 +1,73 @@
+
+: CASE 0 ; immediate  ( init count of OFs )
+
+: OF ( #of -- orig #of+1 / x -- )
+    1+                              ( count OFs )
+    >r                              ( move off the stack in case the control-flow stack is the data stack. )
+    postpone over postpone =        ( copy and test case value)
+    postpone if                     ( add orig to control flow stack )
+    postpone drop                   ( discards case value if = )
+    r>                              ( we can bring count back now )
+; immediate
+
+: ENDOF ( orig1 #of -- orig2 #of )
+    >r                  ( move off the stack in case the control-flow stack is the data stack. )
+    postpone else
+    r>                  ( we can bring count back now ) ; immediate
+; immediate
+
+: ENDCASE ( orig1..orign #of -- )
+    postpone drop                   ( discard case value )
+    0 ?do
+        postpone then
+    loop
+; immediate
+
+
+: foo
+    1 over = if
+      drop 100 . cr
+    else
+      2 over = if
+        drop 200 . cr
+      else
+        -99 . cr
+        drop
+      then
+    then
+;
+
+: bar
+    CASE
+      1 OF 100 . cr ENDOF
+      2 OF 200 . cr ENDOF
+      -99 . cr
+    ENDCASE
+;
+
+: baz
+    case
+      1 of 100 . cr endof
+      2 of 200 . cr endof
+      -99 . cr
+    endcase
+;
+
+see foo
+see bar
+see baz
+
+1 foo
+2 foo 
+3 foo
+
+1 bar
+2 bar
+3 bar
+
+1 baz
+2 baz
+3 baz
+
+bye
+
