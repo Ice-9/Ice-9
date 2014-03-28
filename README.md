@@ -81,21 +81,29 @@ Capable of 64 bit builds - I've been swapping between the two on a regular basis
 
 Depends on GCC because it's using computed goto's by exploiting the 'address-of-label' operator &&label. Damn you Microsoft for poo-pooing the concept. I'd otherwise like to make the source work with both these major compilers and platforms. Can't really see a sweet way to replace it all with a giant switch() yet. Are there still any other DOS/Windows compilers out there with a heartbeat that also happen to support this?
 
-Started life based on the book Threaded Interpretive Languages by RG Loeliger. (I have an original copy - nyah-nyah-nyah nyah nyahhh!) Modified to try to follow ANS Forth 1994 and then lately 2012.
+Uses C++ but only in the sense of "A Better C". Many features of C++ are switched off - eg RTTI. There may be more compiler options that should be given to turn off even more overhead from C++. Exceptions spring to mind - not sure if I've already looked into that already... ;-/ Use of C++ features with overhead are kept at bay. I want all my classes to be Plain Ole' Data so that the object manager is in total control. Similarly, exceptions etc are unwelcome. This is Old Skool Code, kiddies! Lean, mean and on the down-low.
+
+A Perl script pre-processes the main tilengine.b4cpp file into a .cpp file. It's main job is to convert the WORD definitions into an efficient dictionary without us programmers having to suffer. For example, the 'address-of-label' horror using && is basically hidden away, so you can stop vomiting now.
+
+The TIL started life based on the book Threaded Interpretive Languages by RG Loeliger. (I have an original copy - nyah-nyah-nyah nyah nyahhh!) which has been modified to try to follow ANS Forth 1994 and then lately 2012.
 
 Making progress towards passing all the tests in t/ansitest.ice9 - which is not necessarily the ultimate test suite since it's kinda getting old. However, it's a damn fine start. As the comment in that file says:
 
     \ (C) 1993 JOHNS HOPKINS UNIVERSITY / APPLIED PHYSICS LABORATORY
 
-Still working on modernising the Dictionary code. This is one reason why I don't trust the executability of this initial checkin, since this code is in flux.
+Still working on modernising the Dictionary - the vocabulary search order management words and associated code. This is one reason why I don't trust the executability of this initial checkin, since this code is in flux.
 
-Planning to add a special namespaced token search feature eg vocab1::thingy will find thingy in vocab1 regardless of the current search list. No big deal, but it would be nice.
+Planning to add a special namespaced token search feature - eg vocab1::thingy will find thingy in vocab1 regardless of the current search list. No big deal, but it would be nice. Even FORTH people might like that idea?
 
-Contains words to directly call POSIX threading functions and associated thread control objects eg mutexes etc. Each thread gets its own stack and object store. Not sure how to deal with the dictionary which currently handles low-level data storage in the fine tradition of TILs... Sharing is probably ugly. There is no code currently in existence which attempts to lock the dictionary whenever it is extended or even written. Intentions are still completely open. There are some multi-threading FORTH's out there, and they seem to give each thread it's own 'USER' variable space - presumably replacing the variable components of the dictionary.
+Contains words to directly call POSIX threading functions and associated thread control objects eg mutexes etc. Each thread gets its own stack and object store. Not sure how to deal with the dictionary which currently handles low-level data storage in the fine tradition of TILs... Sharing is probably ugly. There is very little code currently in existence which attempts to lock the dictionary whenever it is extended or even written. The dictionary is read-locked only during thread creation. Intentions are still completely open. There are some multi-threading FORTH's out there, and they seem to give each thread it's own 'USER' variable space - presumably replacing the variable components of the dictionary.
 
-Implements a floating point stack (FP) and also an object stack (OS). The OS is integrated (?prove it?) with the Object Manager. Unfortunately I don't yet have a clear set of guidelines for handing the reference counts or appropriate handling of objects because I got distracted by the modernisation of the Dictionary code.
+Implements a floating point stack (FP) and also an object stack (OS). The OS is integrated (?prove it?) with the Object Manager. Unfortunately I don't yet have a clear set of guidelines for handing the reference counts or appropriate handling of objects because I got distracted by the modernisation of the Dictionary code. A next major hump will be to build WORDS that correctly implement a typical Smalltalk-80 runtime. Once that is functional, the more exciting work can begin.
 
-NOTE: SP (and the other stack pointers) currently point at the next free slot (as per Loeliger), not at the top slot of the stack as seems to be expected by the ANS standards. Bummer. Working on that right now... This is one reason why I don't trust the executability of this initial checkin, since the Stack class and dependent code is in flux.
+Speaking of humps, the issue of Pthreads banging it's head against the dictionary needs to be rationalised. I have a feeling that for my needs, the dictionary won't be written to normally. Even variables in the dictionary will probably be subsumed by objects? If not, manually managing mutexes is probably ok for the small number of shared TIL variables that would be needed.
+
+NOTE about the stacks: SP (and the other stack pointers RS, FP and OS) currently point at the next free slot (as per Loeliger), not at the top slot of the stack as seems to be expected by the ANS standards. Bummer. Working on that right now... This is one reason why I don't trust the executability of this initial checkin, since the Stack class and dependent code is in flux.
+
+TODO: LOOK for code that grabs SP and then uses it directly rather than always referencing by index: SP[x]. The [] and () methods in the Stack classes have just had +1 mixed in so that pre-existing .b4cpp code doesn't need touching. However, it would be nice to get rid of that one day; this would require adjusting all use of SP[] and SP().
 
 The TIL core is most likely not free of STATE dependencies. See http://www.complang.tuwien.ac.at/projects/forth.html for links dealing with STATE-smartness.
 
