@@ -75,7 +75,7 @@ Capable of 64 bit builds - I've been swapping between the two on a regular basis
  * NOTE: not proven to have low impact on memory fragmenting or have low impact on coalescence! ETC ETC ETC.
  * NOTE: pulling the deferred deallocation would require implementing a recursive free.
 * Implements the "String Qualifier" and "String Space" concept from the Icon and Unicon languages. Strings are immutable as such. String space is separately collected as needed. All the key features of the Icon string type and string space are implemented. NOTE: as per Icon, the String datatype will behave as mutable using the optimisations offered by the String Qualifier concept.
-* The distinct 2r11 bit-tag for an immutable Symbol simply allows special treatment of Symbols as expected by anyone familiar with Smalltalk, Ruby etc.
+* The distinct 2r11 bit-tag for an immutable Symbol simply allows special treatment of Symbols as expected by anyone familiar with Smalltalk, Ruby etc. Symbols are interned into a hash table, so that calls for a 'new' symbol based on a string will latch onto a pre-existing symbol of the same value.
 
 ### Main features of the TIL core
 
