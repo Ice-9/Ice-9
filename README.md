@@ -16,16 +16,28 @@ The symbol ? means something that's going to take effort.
  * / Failure is an option
  * / Many successes is an option
 * / Threading in the style of Erlang
-* ? Container-based parallelism
- * ? True relational?
- * ? need to decide how values and inheritance can co-exist
- * ? need to decide how it interacts with GDE
+* ? Container-based parallelism - Think APL
+ * ? True relational? - would let the APL approach escape the squareness of matrices, and probably be much sweeter than the 'nested array' approach
+ * ? need to decide how values and inheritance can work seamlessly with an efficient storage of a matrix or other container of higher complexity. I see many pointers in it's future...
+ * ? need to decide how it interacts with GDE - ie what if SOME operations on elements has a different-sized result set?
 * / Operators in the FP sense
 * / Closures, lambdas, currying
  * ? Lazy evaluation?
-* ? Dimension aware (eg physical dims such as time, length. Mostly a compiler issue)
+* ? Dimension aware (eg physical dims such as time, length. Mostly a compiler issue)+
  * ? does it make sense to declare your own dimensions?
  * ? what can they be called? 'metrics'? the word dimension has prior meaning in programming...
+
+\+ dimensions would allow a new class of compiler checks, eg:
+
+    # ignore the syntax here, not formal
+    var velocity : double {metre / second};
+    var mass : double {kilogram};
+    var accel : double {metre / second / second};
+    var force : double {kilogram metre / second / second};
+    force := mass * accel;      # ok
+    force := mass * velocity;   # not ok
+
+This concept does exist out there in research papers, and in fact it's crept (quietly?) into Microsoft's F# language. Interesting!
 
 ### other ideas
 
